@@ -1,0 +1,94 @@
+{
+  "version": 1,
+  "project": "wantai-dev/013-whosundercover",
+  "runner": "ubuntu-latest",
+  "install": [
+    {
+      "command": [
+        "env",
+        "COREPACK_ENABLE_AUTO_PIN=0",
+        "COREPACK_HOME=.local/development-ci/corepack",
+        "corepack",
+        "pnpm@10.20.0",
+        "install",
+        "--frozen-lockfile",
+        "--ignore-scripts"
+      ],
+      "cwd": "."
+    }
+  ],
+  "checks": [
+    {
+      "id": "eslint",
+      "paths": [
+        "src/**",
+        "*.js",
+        "*.ts",
+        "*.tsx",
+        "package.json",
+        "pnpm-lock.yaml",
+        "eslint.config.*"
+      ],
+      "command": [
+        "env",
+        "COREPACK_ENABLE_AUTO_PIN=0",
+        "COREPACK_HOME=.local/development-ci/corepack",
+        "corepack",
+        "pnpm@10.20.0",
+        "run",
+        "lint"
+      ],
+      "cwd": "."
+    },
+    {
+      "id": "build",
+      "paths": [
+        "src/**",
+        "public/**",
+        "index.html",
+        "package.json",
+        "pnpm-lock.yaml",
+        "tsconfig*.json",
+        "vite.config.*"
+      ],
+      "command": [
+        "env",
+        "COREPACK_ENABLE_AUTO_PIN=0",
+        "COREPACK_HOME=.local/development-ci/corepack",
+        "corepack",
+        "pnpm@10.20.0",
+        "run",
+        "build"
+      ],
+      "cwd": "."
+    },
+    {
+      "id": "offline-game-rules",
+      "paths": [
+        "src/lib/**",
+        "vite.config.*",
+        "package.json",
+        "pnpm-lock.yaml"
+      ],
+      "command": [
+        "env",
+        "COREPACK_ENABLE_AUTO_PIN=0",
+        "COREPACK_HOME=.local/development-ci/corepack",
+        "corepack",
+        "pnpm@10.20.0",
+        "exec",
+        "vitest",
+        "run",
+        "src/lib/gameRules.test.ts",
+        "src/lib/offlineGame.test.ts"
+      ],
+      "cwd": "."
+    }
+  ],
+  "notes": [
+    "命令来源：package.json lint/build/test及src/lib/gameRules.test.ts、offlineGame.test.ts。",
+    "采用pnpm-lock.yaml（lockfileVersion 9.0），通过Corepack固定pnpm@10.20.0；COREPACK_ENABLE_AUTO_PIN=0禁止自动改写package.json，COREPACK_HOME=.local/development-ci/corepack将缓存限定到仓库受管目录。所有命令工作目录均为仓库根目录；不回退到无锁npm。",
+    "选定测试仅内存离线游戏规则，不调用Supabase，不代表联网多人房间、RLS或生产验收。",
+    "pnpm@10.20.0已用官方npm registry只读核实存在（npm view --registry=https://registry.npmjs.org pnpm@10.20.0 version输出10.20.0）；本次未安装产品依赖或执行构建/测试。"
+  ]
+}
